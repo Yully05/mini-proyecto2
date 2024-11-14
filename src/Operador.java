@@ -76,13 +76,8 @@ public class Operador {
 
     @Override
     public String toString() {
-        return this.nombre
-                + " - "
-                + this.tipoServ.toString().toLowerCase()
-                + " - unidades vendidas: "
-                + this.cantidadesVendidas
-                + " - Total ingresos = $"
-                + this.totalIngreso;
+        return this.nombre + " - "+ this.tipoServ.toString().toLowerCase()
+;
     }
 
 }

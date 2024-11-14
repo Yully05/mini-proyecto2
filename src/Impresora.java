@@ -19,6 +19,6 @@ public class Impresora extends ServicioImpresora {
 	
 	@Override
 	public String toString() {
-		return this.tipo + " - unidades vendidas: " + this.cantidadUnidades + " - Total ingresos = $" + super.getTotalIngresos();
+		return this.tipo;
 	}
 }

@@ -118,15 +118,93 @@ public class Main {
 
 
     public static void cierreDia(Negocio local){
-		
-		
-		for (int i = 0; i < local.getServicioImpresora().size(); i++) {
-            System.out.println(local.getServicioImpresora().get(i));
+		double fotocopiaTotalIngresos = 0.0;
+        double fotocopiaTotalCostos = 0.0;
+        double fotocopiaGanacias = 0.0;
+        double laserTotalIngresos = 0.0;
+        double laserTotalCostos = 0.0;
+        double laserGanacias = 0.0;
+        double plotterTotalIngresos = 0.0;
+        double plotterTotalCostos = 0.0;
+        double plotterGanacias = 0.0;
+        double minutoIngresos = 0.0;
+        double minutoCostos = 0.0;
+        double minutoGanacias = 0.0;
+        double simcardIngresos = 0.0;
+        double simcardCostos = 0.0;
+        double simcardGanacias = 0.0;
+
+        Object servicioConMayorGanacias = null;
+        double ganaciaMax = 0.0;
+
+        ArrayList<Operador> operadores = local.getOperadores();
+        ArrayList<ServicioImpresora> servImpresoras = local.getServicioImpresora();
+
+		for (ServicioImpresora servimp : local.getServicioImpresora()) {
+            if(servimp instanceof Impresora
+                    && servimp.getTipo().contains("Fotocopia")){
+                fotocopiaTotalCostos += servimp.valorCostos();
+                fotocopiaTotalIngresos += servimp.getTotalIngresos();
+                fotocopiaGanacias += servimp.ganancia();
+            }else if(servimp instanceof Impresora
+                    && servimp.getTipo().contains("Laser")){
+                laserTotalCostos += servimp.valorCostos();
+                laserTotalIngresos += servimp.getTotalIngresos();
+                laserGanacias += servimp.ganancia();
+            }else if(servimp instanceof Plotter){
+                plotterTotalCostos += servimp.valorCostos();
+                plotterTotalIngresos += servimp.getTotalIngresos();
+                plotterGanacias += servimp.ganancia();
+            }
+            if(servimp.ganancia() > ganaciaMax){
+                ganaciaMax = servimp.ganancia();
+                servicioConMayorGanacias = servimp;
+            }
         }
 
-        for (int i = 0; i < local.getOperadores().size(); i++) {
-            System.out.println(local.getOperadores().get(i));
+        for (Operador serOperador : local.getOperadores()) {
+            if(serOperador.getTipoServ().toString().equals("MINUTO")){
+                minutoCostos += serOperador.valorCostos();
+                minutoIngresos += serOperador.getTotalIngreso();
+                minutoGanacias += serOperador.ganancia();
+            }else if(serOperador.getTipoServ().toString().equals("SIMCARD")){
+                simcardCostos += serOperador.valorCostos();
+                simcardIngresos += serOperador.getTotalIngreso();
+                simcardGanacias += serOperador.ganancia();
+            }
+            if(serOperador.ganancia() > ganaciaMax){
+                ganaciaMax = serOperador.ganancia();
+                servicioConMayorGanacias = serOperador;
+            }
         }
+
+        double totalDineroRecolectadoDia = fotocopiaTotalIngresos
+                + laserTotalIngresos
+                + plotterTotalIngresos
+                + minutoIngresos
+                + simcardIngresos;
+        double totalCostosOperacionales = fotocopiaTotalCostos
+                + laserTotalCostos
+                + plotterTotalCostos
+                + minutoCostos
+                + simcardCostos
+                + local.getCostoEmpleadoDia()
+                + local.getCostoEnergiaDia();
+        double totalganaciasOperacionales = fotocopiaGanacias
+                + laserGanacias
+                + plotterGanacias
+                + minutoGanacias
+                + simcardGanacias;
+
+
+        System.out.println("El Total del Dinero Recogido es: $" + totalDineroRecolectadoDia);
+        System.out.println("La Ganancia Obtenida es: $" + totalganaciasOperacionales);
+        System.out.println("Los Gastos de Produccion son: $" + totalCostosOperacionales );
+        System.out.println("El servicio que genera mas ganancia es "
+                + ((servicioConMayorGanacias == null) ? "-Ningun servicio ha sido facturado-" : servicioConMayorGanacias.toString())
+                + " con $"
+                + ganaciaMax);
+
     }
 
     public static void subMenuImpresora(Negocio local, Scanner getData){

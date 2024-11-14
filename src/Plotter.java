@@ -20,7 +20,7 @@ public class Plotter extends ServicioImpresora{
 	
 	@Override
 	public String toString() {
-		return this.tipo + " - cm cuadrados vendidos: " + this.CmCuadradoFacturados + " - Total ingresos = $" + super.getTotalIngresos();
+		return this.tipo;
 	}
 
 }
