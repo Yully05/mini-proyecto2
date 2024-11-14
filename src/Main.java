@@ -21,7 +21,7 @@ public class Main {
             valorUnidad = operador.getValorVentaSimCard();
         }
         System.out.println("\nValor venta por " + tipoVenta + " " + operador.getNombre() + ": " + valorUnidad);
-        System.out.print("Cantidad minutos: ");
+        System.out.print("Cantidad de " + tipoVenta + ": ");
         cantidad = getData.nextInt();
         getData.nextLine(); //limpiar el salto de línea
         System.out.print("Valor pagado: ");
@@ -51,7 +51,7 @@ public class Main {
                 Tipo de impresion
                     (1) Color
                     (2) Blanco y negro
-                Ingrese una opción:  """);
+                Ingrese una opción: """);
         tipoImpresion = getData.nextLine();
         if (tipoImpresion.equals("1")){
             tipoImpresion = "color";
@@ -68,9 +68,10 @@ public class Main {
         if (tipoServicio.equals("fotocopia")) {
             if (local.registrarVentaFotocopia(tipoImpresion, cantidad, valorVenta)) {
                 System.out.println("\n**** Registro exitoso de fotocopia ****");
-                System.out.println(tipoServicio + " - " + tipoImpresion + " cantidad: " + cantidad);
-                System.out.println("Costos : " + local.getFotocopia().valorCostos() +
-                                " Ganancia: " + local.getFotocopia().ganancia());
+                System.out.println(tipoServicio + " a " + tipoImpresion + " - cantidad: " + cantidad);
+                System.out.println("Dinero en Caja: " + local.getFotocopia().getValorPagado() +
+                        " | Costos : " + local.getFotocopia().valorCostos() +
+                        " | Ganancia: " + local.getFotocopia().ganancia());
                 
             } else {
                 System.out.println("Error! Verifique el valor pagado.");
@@ -78,9 +79,10 @@ public class Main {
         } else if (tipoServicio.equals("laser")) {
             if (local.registrarVentaLaser(tipoImpresion, cantidad, valorVenta)) {
                 System.out.println("\n**** Registro exitoso de impresion laser ****");
-                System.out.println(tipoServicio + " - " + tipoImpresion + " cantidad: " + cantidad);
-                System.out.println("Costos : " + local.getLaser().valorCostos() +
-                                " | Ganancia: " + local.getLaser().ganancia());
+                System.out.println(tipoServicio + " a " + tipoImpresion + " - cantidad: " + cantidad);
+                System.out.println("Dinero en Caja: " + local.getLaser().getValorPagado() +
+                        " | Costos : " + local.getLaser().valorCostos() +
+                        " | Ganancia: " + local.getLaser().ganancia());
             } else {
                 System.out.println("Error! Verifique el valor pagado.");
             }
@@ -117,8 +119,27 @@ public class Main {
         }
     }
 
-    public static void cierreDia(){
+    public static void subMenuCierreDia(Negocio local){
+        double sumaDinero = 0, ganancia = 0, costos = 0;
+        sumaDinero += local.getFotocopia().getValorPagado();
+        sumaDinero += local.getLaser().getValorPagado();
+        sumaDinero += local.getPlotter().getValorPagado();
 
+        ganancia += local.getFotocopia().ganancia();
+        ganancia += local.getLaser().ganancia();
+        ganancia += local.getPlotter().ganancia();
+
+        costos += local.getFotocopia().valorCostos();
+        costos += local.getLaser().valorCostos();
+        costos += local.getPlotter().valorCostos();
+
+        costos += local.getCostoEmpleadoDia();
+        costos += local.getCostoEnergiaDia();
+
+        System.out.println("El Total del Dinero Recogido es: " + sumaDinero);
+        System.out.println("La Ganancia Obtenida es: " + ganancia);
+        System.out.println("Los Gastos de Produccion son: " + costos);
+        System.out.println("El servicio que genera mas ganancia es " + local.servicioGananciaMax());
 
     }
 
@@ -155,7 +176,7 @@ public class Main {
         System.out.println("\n***** Bienvenido a Variedades Tecnológicas ******");
         do {
             System.out.print("""
-            \nFunciones:
+                
                 (1) Registrar Minutos
                 (2) Registrar Sim Card
                 (3) Registrar servicio Impresora
@@ -168,7 +189,7 @@ public class Main {
                 case "1" -> servicioVentaOperador(local, getData, "minuto");
                 case "2" -> servicioVentaOperador(local, getData, "simcard");
                 case "3" -> subMenuImpresora(local, getData);
-                case "4" -> cierreDia();
+                case "4" -> subMenuCierreDia(local);
                 case "5" -> { }
                 default -> System.out.println("Opcion no valida");
             }

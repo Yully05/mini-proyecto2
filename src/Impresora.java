@@ -5,6 +5,7 @@ public class Impresora extends ServicioImpresora {
     private double costoColor;
     private double valorVentaBN;
     private double valorVentaColor;
+    private double valorPagado;
 
     public Impresora(double costoBN, double valorVentaBN, double costoColor, double valorVentaColor){
         this.costoBN = costoBN;
@@ -13,6 +14,7 @@ public class Impresora extends ServicioImpresora {
         this.valorVentaColor = valorVentaColor;
         this.cantidadBN = 0;
         this.cantidadColor = 0;
+        this.valorPagado = 0;
     }
 
     public int getCantidadBN() {
@@ -61,6 +63,14 @@ public class Impresora extends ServicioImpresora {
 
     public void setValorVentaColor(double valorVentaColor) {
         this.valorVentaColor = valorVentaColor;
+    }
+
+    public double getValorPagado() {
+        return valorPagado;
+    }
+
+    public void setValorPagado(double valorPagado) {
+        this.valorPagado += valorPagado;
     }
 
     @Override

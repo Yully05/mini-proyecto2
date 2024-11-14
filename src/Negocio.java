@@ -98,11 +98,13 @@ public class Negocio {
         if (tipoImpresion.equals("color")){
             if (valorPagado == cantidad * Fotocopia.getValorVentaColor()){
                 Fotocopia.setCantidadColor(cantidad);
+                Fotocopia.setValorPagado(valorPagado);
                 return true;
             }
         }else if (tipoImpresion.equals("BN")){
             if (valorPagado == cantidad * Fotocopia.getValorVentaBN()){
                 Fotocopia.setCantidadBN(cantidad);
+                Fotocopia.setValorPagado(valorPagado);
                 return true;
             }
         }
@@ -113,11 +115,13 @@ public class Negocio {
         if (tipoImpresion.equals("color")){
             if (valorPagado == cantidad * Laser.getValorVentaColor()){
                 Laser.setCantidadColor(cantidad);
+                Laser.setValorPagado(valorPagado);
                 return true;
             }
         }else if (tipoImpresion.equals("BN")){
             if (valorPagado == cantidad * Laser.getValorVentaBN()){
                 Laser.setCantidadBN(cantidad);
+                Laser.setValorPagado(valorPagado);
                 return true;
             }
         }
@@ -127,6 +131,7 @@ public class Negocio {
     public boolean registrarVentaPlano(double cantidad, double area, double valorPagado){
         if (valorPagado == cantidad * area * Plotter.getValorVentaPlano()) {
             Plotter.setCantidad(cantidad);
+
             return true;
         }
         return false;
@@ -140,5 +145,17 @@ public class Negocio {
         return false;
     }
 
-
+    public String servicioGananciaMax(){
+        double gananciaFotoc, gananciaLaser, gananciaPlotter;
+        gananciaFotoc = Fotocopia.ganancia();
+        gananciaLaser = Laser.ganancia();
+        gananciaPlotter = Plotter.ganancia();
+        if (gananciaFotoc > gananciaLaser && gananciaFotoc > gananciaPlotter){
+            return String.format("Ganancia de la Fotocopiadora - %2f", gananciaFotoc);
+        } else if (gananciaLaser > gananciaFotoc && gananciaLaser > gananciaPlotter) {
+            return String.format("Ganancia de la Impresora - %2f", gananciaLaser);
+        }else{
+            return String.format("Ganancia del Plotter - %2f", gananciaPlotter);
+        }
+    }
 }

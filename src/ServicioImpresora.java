@@ -29,7 +29,7 @@ public abstract class ServicioImpresora {
     }
 
     public void setValorPagado(double valorPagado) {
-        this.valorPagado = valorPagado;
+        this.valorPagado += valorPagado;
     }
 
     public abstract double ganancia();
