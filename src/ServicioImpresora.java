@@ -1,6 +1,6 @@
 
 public abstract class ServicioImpresora {
-    protected double TotalIngresos;
+    protected double totalIngresos;
     protected String tipo;
     protected double costo;
     protected double valorParaVenta;
@@ -13,11 +13,11 @@ public abstract class ServicioImpresora {
     }
 
     public double getTotalIngresos() {
-        return TotalIngresos;
+        return totalIngresos;
     }
 
     public void setTotalIngresos(double totalIngresos) {
-        this.TotalIngresos += totalIngresos;
+        this.totalIngresos += totalIngresos;
     }
 
     public String getTipo() {
@@ -45,7 +45,7 @@ public abstract class ServicioImpresora {
     }
 
     public double ganancia(){
-        return TotalIngresos - valorCostos();
+        return totalIngresos - valorCostos();
     };
 
     public abstract double valorCostos();
