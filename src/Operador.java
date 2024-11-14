@@ -1,21 +1,20 @@
 public class Operador {
     private String nombre;
-    private double valorPagado;
-    private double costoMinuto;
-    private double valorVentaMinuto;
-    private double cantidadMinuto;
-    private double costoSimCard;
-    private double valorVentaSimCard;
-    private double cantidadSimCard;
+	private TipoServicioOperador tipoServ;
+    private double totalIngreso;
+    private double costoUnidad;
+    private double valorVentaUnidad;
+    private int cantidadesVendidas;
+	
+	public enum TipoServicioOperador {
+    MINUTO, SIMCARD;
+	}
 
-    public Operador(String nombre, double costoMin, double ventaMin, double costoSim, double ventaSim){
+    public Operador(String nombre, String tipoServ, double costoUnidad, double valorVentaUnidad){
         this.nombre = nombre;
-        this.costoMinuto = costoMin;
-        this.valorVentaMinuto = ventaMin;
-        this.costoSimCard = costoSim;
-        this.valorVentaSimCard = ventaSim;
-        this.cantidadMinuto = 0;
-        this.cantidadSimCard = 0;
+        this.tipoServ = TipoServicioOperador.valueOf(tipoServ.toUpperCase());
+        this.costoUnidad = costoUnidad;
+        this.valorVentaUnidad = valorVentaUnidad;
     }
 
     public String getNombre() {
@@ -26,84 +25,64 @@ public class Operador {
         this.nombre = nombre;
     }
 
-    public double getValorPagado() {
-        return valorPagado;
+    public TipoServicioOperador getTipoServ() {
+        return tipoServ;
     }
 
-    public void setValorPagado(double valorPagado) {
-        this.valorPagado = valorPagado;
+    public void setTipoServ(TipoServicioOperador tipoServ) {
+        this.tipoServ = tipoServ;
+    }
+	
+	public double getTotalIngreso() {
+        return totalIngreso;
     }
 
-    public double getCostoMinuto() {
-        return costoMinuto;
+    public void setTotalIngreso(double valorVenta) {
+        this.totalIngreso += valorVenta;
     }
 
-    public void setCostoMinuto(double costo) {
-        this.costoMinuto = costo;
+    public double getCostoUnidad() {
+        return costoUnidad;
     }
 
-    public double getValorVentaMinuto() {
-        return valorVentaMinuto;
+    public void setCostoUnidad(double costo) {
+        this.costoUnidad = costo;
     }
 
-    public void setValorVentaMinuto(double valorVenta) {
-        this.valorVentaMinuto = valorVenta;
+    public double getValorVentaUnidad() {
+        return valorVentaUnidad;
     }
 
-    public double getCantidadMinuto() {
-        return cantidadMinuto;
+    public void setValorVentaUnidad(double valorVentaUnidad) {
+        this.valorVentaUnidad = valorVentaUnidad;
     }
 
-    public void setCantidadMinuto(double cantidadMin) {
-        this.cantidadMinuto = this.cantidadMinuto + cantidadMin;
+    public int getCantidadesVendidas() {
+        return cantidadesVendidas;
     }
 
-    public double getCostoSimCard() {
-        return costoSimCard;
+    public void setCantidadesVendidas(int cantidadesVendidas) {
+        this.cantidadesVendidas += cantidadesVendidas;
     }
 
-    public void setCostoSimCard(double costoSimCard) {
-        this.costoSimCard = costoSimCard;
+
+    public double ganancia(){
+        return this.totalIngreso - valorCostos();
     }
 
-    public double getValorVentaSimCard() {
-        return valorVentaSimCard;
+    public double valorCostos(){
+        return this.cantidadesVendidas * this.costoUnidad;
     }
 
-    public void setValorVentaSimCard(double valorVentaSimCard) {
-        this.valorVentaSimCard = valorVentaSimCard;
-    }
-
-    public double getCantidadSimCard() {
-        return cantidadSimCard;
-    }
-
-    public void setCantidadSimCard(double cantidadSim) {
-        this.cantidadSimCard = this.cantidadSimCard + cantidadSim;
-    }
-
-    public double gananciaMinutos(){
-        return this.cantidadMinuto * (this.valorVentaMinuto - this.costoMinuto);
-    }
-
-    public double valorCostosMinutosVendidos(){
-        return this.cantidadMinuto * this.costoMinuto;
-    }
-
-    public double valorVentasMinutosVendidos(){
-        return this.cantidadMinuto * this.valorVentaMinuto;
-    }
-
-    public double gananciaSimCard(){
-        return this.cantidadSimCard * (this.valorVentaSimCard - this.costoSimCard);
-    }
-
-    public double valorCostoSimCardVendidas(){
-        return this.getCantidadSimCard() * this.costoSimCard;
-    }
-
-    public double valorVentasSimCardVendidas(){
-        return this.cantidadSimCard * this.valorVentaSimCard;
+    @Override
+    public String toString() {
+        return this.nombre
+                + " - "
+                + this.tipoServ.toString().toLowerCase()
+                + " - unidades vendidas: "
+                + this.cantidadesVendidas
+                + " - Total ingresos = $"
+                + this.totalIngreso;
     }
 
 }

@@ -15,7 +15,12 @@ public class Plotter extends ServicioImpresora{
 
     @Override
     public double valorCostos() {
-        return CmCuadradoFacturados * super.getCosto();
+        return Math.round((CmCuadradoFacturados * super.getCosto() * 100.0) / 100.0);
     }
+	
+	@Override
+	public String toString() {
+		return this.tipo + " - cm cuadrados vendidos: " + this.CmCuadradoFacturados + " - Total ingresos = $" + super.getTotalIngresos();
+	}
 
 }

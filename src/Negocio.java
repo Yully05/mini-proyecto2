@@ -16,15 +16,18 @@ public class Negocio {
         servicioImpresora.add(new Plotter("Plotter-Publicidad", 40, 60));
 
         operadores = new ArrayList<>();
-        operadores.add(new Operador("UFF", 30, 100, 500, 1000));
-        operadores.add(new Operador("Claro", 70, 200, 900, 2000));
-        operadores.add(new Operador("Movistar", 50, 150, 700, 1500));
+        operadores.add(new Operador("UFF", "MINUTO", 30, 100));
+		operadores.add(new Operador("UFF", "SIMCARD", 500, 1000));
+		operadores.add(new Operador("Claro", "MINUTO", 70, 200));
+		operadores.add(new Operador("Claro", "SIMCARD", 900, 2000));
+		operadores.add(new Operador("Movistar", "MINUTO", 50, 150));
+		operadores.add(new Operador("Movistar", "SIMCARD", 700, 1500));
         this.costoEnergiaDia = costoEnergia;
         this.costoEmpleadoDia = costoEmpleado;
     }
 
     public ArrayList<ServicioImpresora> getServicioImpresora() {
-        return servicioImpresora;
+        return (ArrayList<ServicioImpresora>) servicioImpresora.clone();
     }
 
     public void setServicioImpresora(ArrayList<ServicioImpresora> servicioImpresora) {
@@ -32,7 +35,7 @@ public class Negocio {
     }
 
     public ArrayList<Operador> getOperadores() {
-        return operadores;
+        return (ArrayList<Operador>) operadores.clone();
     }
 
     public void setOperadores(ArrayList<Operador> listaMinutos) {
@@ -55,30 +58,16 @@ public class Negocio {
         this.costoEmpleadoDia = costoEmpleadoDia;
     }
 
-    public boolean registrarVentaOperador(int indiceOperador, String tipoVentaOperador, double cantidad, double valorPagado){
-        Operador operador = this.operadores.get(indiceOperador - 1); // operador especifico segun la posicion
-
-        if (tipoVentaOperador.equals("minuto")){
-            double valorVentaMinuto = operador.getValorVentaMinuto(); // valor por minuto del operador especifico}
-            
-            if (valorPagado == cantidad * valorVentaMinuto) {
-                operador.setCantidadMinuto(cantidad);
-                return true;
-            } else {
-                return false;
-            }
-        } else if (tipoVentaOperador.equals("simcard")){
-            double valorVentaSimCard = operador.getValorVentaSimCard(); //valor simcard operador especifico
-
-            if (valorPagado == cantidad * valorVentaSimCard){
-                operador.setCantidadSimCard(cantidad);
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
+    public boolean registrarVentaOperador(int servOperadorSeleccionado, int cantidad, double valorPagado){
+        if(cantidad > 0
+                && servOperadorSeleccionado >=0
+                && servOperadorSeleccionado < this.operadores.size()
+                && valorPagado == cantidad * this.operadores.get(servOperadorSeleccionado).getValorVentaUnidad()){
+            this.operadores.get(servOperadorSeleccionado).setCantidadesVendidas(cantidad);
+            this.operadores.get(servOperadorSeleccionado).setTotalIngreso(valorPagado);
+            return true;
         }
+        return false;
     }
 
     public boolean registrarVentaServImpresion(int tipoImpresion, int cantidad, double valorPagado){
@@ -88,22 +77,27 @@ public class Negocio {
                 && cantidad > 0
                 && valorPagado == cantidad * this.servicioImpresora.get(tipoImpresion).getValorParaVenta()){
             ((Impresora) this.servicioImpresora.get(tipoImpresion)).setCantidadUnidades(cantidad);
+			this.servicioImpresora.get(tipoImpresion).setTotalIngresos(valorPagado);
             return true;
         }
         return false;
     }
 
     public boolean registrarVentaServImpresion(int tipoPlotter, double cantidad, double valorPagado){
-        if(tipoPlotter >= 0
+		if(tipoPlotter >= 0
                 && tipoPlotter < this.servicioImpresora.size()
                 && this.servicioImpresora.get(tipoPlotter) instanceof Plotter
                 && cantidad > 0.0
-                && valorPagado == cantidad * this.servicioImpresora.get(tipoPlotter).getValorParaVenta()){
+                && valorPagado == aDosDecimales(cantidad * this.servicioImpresora.get(tipoPlotter).getValorParaVenta())){
             ((Plotter) this.servicioImpresora.get(tipoPlotter)).setCmCuadradoFacturados(cantidad);
+			this.servicioImpresora.get(tipoPlotter).setTotalIngresos(valorPagado);
             return true;
         }
         return false;
     }
 
+    public static double aDosDecimales(double numDouble){
+        return Math.round(numDouble*100.0)/100.0;
+    }
 
 }

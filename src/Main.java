@@ -1,55 +1,80 @@
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Main {
 
-    public static void servicioVentaOperador(Negocio local, Scanner getData, String tipoVenta){
-        int opcion, cantidad;
+    public static void servicioVentaOperador(Negocio local, Scanner getData){
+        int cantidad;
+        String opcion;
         double valorVenta;
-
-        System.out.println("\nOperadores");
-        for (int i = 0; i < local.getOperadores().size(); i++) {
-            System.out.println("    (" + (i + 1) + ") " + local.getOperadores().get(i).getNombre());
-        }
-        System.out.print("Ingrese su opcion: ");
-        opcion = getData.nextInt();
-        getData.nextLine(); //limpiar el salto de línea
-        Operador operador = local.getOperadores().get(opcion - 1); //opreador seleccionado
-        double valorUnidad = 0;
-        if (tipoVenta.equals("minuto")){
-            valorUnidad= operador.getValorVentaMinuto();
-        }else if (tipoVenta.equals("simcard")){
-            valorUnidad = operador.getValorVentaSimCard();
-        }
-        System.out.println("\nValor venta por " + tipoVenta + " " + operador.getNombre() + ": " + valorUnidad);
-        System.out.print("Cantidad minutos: ");
-        cantidad = getData.nextInt();
-        getData.nextLine(); //limpiar el salto de línea
-        System.out.print("Valor pagado: ");
-        valorVenta = getData.nextInt();
-        getData.nextLine();
-
-        if (local.registrarVentaOperador(opcion, tipoVenta, cantidad, valorVenta)){
-            System.out.println("\n**** Registro exitoso **** ");
-            if (tipoVenta.equals("minuto")){
-                System.out.println(tipoVenta + " vendidos: " + operador.getCantidadMinuto());
-                System.out.println("Costos: " + operador.valorCostosMinutosVendidos() +
-                            " Ganancia: " + operador.gananciaMinutos());
-            }else if (tipoVenta.equals("simcard")){
-                System.out.println(tipoVenta + " vendidas: " + operador.getCantidadSimCard());
-                System.out.println(("Costos: " + operador.valorCostoSimCardVendidas() +
-                            " Ganancia: " + operador.gananciaSimCard()));
+        ArrayList<Operador> operadores = local.getOperadores();
+		while(true){
+            System.out.println("\nServicios operadores");
+            for (int i = 0; i < operadores.size(); i++) {
+                System.out.println("    (" + (i + 1) + ") "
+                        + operadores.get(i).getNombre()
+                        + " - "
+                        + operadores.get(i).getTipoServ().toString().toLowerCase());
             }
-        }else{
-            System.out.println("Error! Verifique el valor pagado.");
+            System.out.print("""
+            \n(M) Menú anterior
+            Ingrese una opcion:\t""");
+            opcion = getData.nextLine();
+
+            if (opcion.equals("M")){break;}
+
+            try {
+                int valorOpcion = Integer.parseInt(opcion) - 1;
+                if(valorOpcion < operadores.size()
+                        && valorOpcion >= 0){
+
+                    System.out.println("\nValor venta por " + operadores.get(valorOpcion).getTipoServ().toString().toLowerCase()
+                            + " " + operadores.get(valorOpcion).getNombre() + ": "
+                            + operadores.get(valorOpcion).getValorVentaUnidad());
+                    System.out.print("Ingrese la cantidad: ");
+                    cantidad = getData.nextInt();
+                    getData.nextLine(); //limpiar el salto de línea
+                    System.out.print("Valor pagado: ");
+                    valorVenta = getData.nextDouble();
+                    getData.nextLine();
+
+
+                    if (local.registrarVentaOperador(valorOpcion, cantidad, valorVenta)){
+                        System.out.printf("\n**** Registro exitoso de %s - %s**** \n cantidad: %d \n valor pagado: %.2f",
+                                operadores.get(valorOpcion).getNombre(),
+                                operadores.get(valorOpcion).getTipoServ().toString().toLowerCase(),
+                                cantidad,
+                                valorVenta);
+
+                    }else{
+                        System.out.println("Error! Verifique el valor pagado.");
+                    }
+                    break;
+                }else{
+                    throw new NumberFormatException();
+                }
+            }catch (NumberFormatException e){
+                System.err.println("\nError! la opción ingresada no es correcta\n");
+            }catch (IllegalArgumentException | NoSuchElementException | IllegalStateException e){
+                System.err.println("Se ha ingresado un valor incorrectamente, se cancela la operación" +
+                        "intente nuevamente");
+                if(getData.hasNext()){
+                    getData.nextLine();
+                }
+            }
         }
+
+
+
     }
 
     public static void ventaServicioImpresora(Negocio local, Scanner getData, int tipoServicio){
-        double cantidad = 0, valorVenta;
+        double cantidad = 0.0, valorVenta = 0.0;
         boolean confirmacionPago = false;
         try{
-            if(local.getServicioImpresora().get(tipoServicio) instanceof Impresora){
+			ServicioImpresora serv = local.getServicioImpresora().get(tipoServicio);
+            if(serv instanceof Impresora){
                 System.out.print("Ingrese la cantidad de unidades vendidas: ");
                 int und = getData.nextInt();
                 getData.nextLine();
@@ -58,41 +83,50 @@ public class Main {
                 getData.nextLine();
                 confirmacionPago = local.registrarVentaServImpresion(tipoServicio, und, valorVenta);
                 cantidad = und;
-            }else if(local.getServicioImpresora().get(tipoServicio) instanceof Plotter){
-                System.out.print("Ingrese la cantidad de cm cuadrados vendidas (usar , para el decimal): ");
-                cantidad = getData.nextDouble();
+            }else if(serv instanceof Plotter){
+                System.out.print("Ingrese alto en cm cuadrados del encargo (usar , para el decimal): ");
+                double alto = getData.nextDouble();
+				getData.nextLine();
+				System.out.print("Ingrese ancho en cm cuadrados del encargo (usar , para el decimal): ");
+                double ancho = getData.nextDouble();
+				getData.nextLine();
+				cantidad = Negocio.aDosDecimales(alto*ancho);
+                System.out.println("Valor a pagar $" + Negocio.aDosDecimales(serv.getValorParaVenta() * cantidad));
                 System.out.print("Valor pagado: ");
-                valorVenta = getData.nextDouble();
+				valorVenta = getData.nextDouble();
+				getData.nextLine();
                 confirmacionPago = local.registrarVentaServImpresion(tipoServicio, cantidad, valorVenta);
             }
 
            if (confirmacionPago) {
-               ServicioImpresora serv = local.getServicioImpresora().get(tipoServicio);
-               System.out.println("\n**** Registro exitoso de fotocopia ****");
-               System.out.println(serv.getTipo()
-                            + "\n cantidad: " + cantidad
-                            + "\n valor pagado: " + cantidad*serv.getValorParaVenta());
-
+               System.out.printf("\n**** Registro exitoso de %s**** \n cantidad: %.2f \n valor pagado: %.2f",
+                       serv.getTipo(),
+                       cantidad,
+                       valorVenta);
            } else {
                     System.out.println("Error! Verifique el valor pagado.");
            }
         }catch (IllegalArgumentException | NoSuchElementException | IllegalStateException e){
-            System.err.println("Se ha ingresado un valor incorrectamente, se cancela la operacióm " +
+            System.err.println("Se ha ingresado un valor incorrectamente, se cancela la operación" +
                     "intente nuevamente");
             if(getData.hasNext()){
                 getData.nextLine();
             }
         }
-
-
-
     }
 
 
 
-    public static void cierreDia(){
+    public static void cierreDia(Negocio local){
+		
+		
+		for (int i = 0; i < local.getServicioImpresora().size(); i++) {
+            System.out.println(local.getServicioImpresora().get(i));
+        }
 
-
+        for (int i = 0; i < local.getOperadores().size(); i++) {
+            System.out.println(local.getOperadores().get(i));
+        }
     }
 
     public static void subMenuImpresora(Negocio local, Scanner getData){
@@ -115,6 +149,7 @@ public class Main {
                 if(valorOpcion < cantidadServimpresion
                         && valorOpcion >= 0){
                     ventaServicioImpresora(local, getData, valorOpcion);
+                    break;
                 }else{
                     throw new NumberFormatException();
                 }
@@ -134,23 +169,21 @@ public class Main {
         do {
             System.out.print("""
             \nFunciones:
-                (1) Registrar Minutos
-                (2) Registrar Sim Card
-                (3) Registrar servicio Impresora
-                (4) Cierre dia
-                (5) Salir
+                (1) Registrar servicio de Operador
+                (2) Registrar servicio Impresora
+                (3) Cierre dia
+                (4) Salir
             Ingrese una opcion:\t""");
             opcion = getData.nextLine();
 
             switch (opcion) {
-                case "1" -> servicioVentaOperador(local, getData, "minuto");
-                case "2" -> servicioVentaOperador(local, getData, "simcard");
-                case "3" -> subMenuImpresora(local, getData);
-                case "4" -> cierreDia();
-                case "5" -> { }
+                case "1" -> servicioVentaOperador(local, getData);
+                case "2" -> subMenuImpresora(local, getData);
+                case "3" -> cierreDia(local);
+                case "4" -> { }
                 default -> System.out.println("Opcion no valida");
             }
-        } while (!opcion.equals("5"));
+        } while (!opcion.equals("4"));
 
         System.out.println("***** Gracias por utilizar nuestros servicios *****");
     }

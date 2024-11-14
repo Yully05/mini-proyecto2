@@ -1,5 +1,5 @@
 public class Impresora extends ServicioImpresora {
-    protected int cantidadUnidades;
+    private int cantidadUnidades;
     public Impresora(String tipo, double costo, double valorParaVenta) {
         super(tipo, costo, valorParaVenta);
     }
@@ -14,6 +14,11 @@ public class Impresora extends ServicioImpresora {
 
     @Override
     public double valorCostos() {
-        return this.cantidadUnidades * super.getCosto();
+        return Math.round((cantidadUnidades * super.getCosto() * 100.0) / 100.0);
     }
+	
+	@Override
+	public String toString() {
+		return this.tipo + " - unidades vendidas: " + this.cantidadUnidades + " - Total ingresos = $" + super.getTotalIngresos();
+	}
 }
