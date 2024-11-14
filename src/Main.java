@@ -1,3 +1,4 @@
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Main {
@@ -44,78 +45,50 @@ public class Main {
         }
     }
 
-    public static void servicioVentaImpresora(Negocio local, Scanner getData, String tipoServicio){
-        double cantidad, valorVenta;
-        String tipoImpresion;
-        System.out.print("""
-                Tipo de impresion
-                    (1) Color
-                    (2) Blanco y negro
-                Ingrese una opción:  """);
-        tipoImpresion = getData.nextLine();
-        if (tipoImpresion.equals("1")){
-            tipoImpresion = "color";
-        } else if (tipoImpresion.equals("2")){
-            tipoImpresion = "BN";
-        }
-        System.out.print("Ingrese la cantidad: ");
-        cantidad = getData.nextDouble();
-        getData.nextLine(); //limpiar el salto de línea
-        System.out.print("Valor pagado: ");
-        valorVenta = getData.nextDouble();
-        getData.nextLine();
-        
-        if (tipoServicio.equals("fotocopia")) {
-            if (local.registrarVentaFotocopia(tipoImpresion, cantidad, valorVenta)) {
-                System.out.println("\n**** Registro exitoso de fotocopia ****");
-                System.out.println(tipoServicio + " - " + tipoImpresion + " cantidad: " + cantidad);
-                System.out.println("Costos : " + local.getFotocopia().valorCostos() +
-                                " Ganancia: " + local.getFotocopia().ganancia());
-                
-            } else {
-                System.out.println("Error! Verifique el valor pagado.");
+    public static void ventaServicioImpresora(Negocio local, Scanner getData, int tipoServicio){
+        double cantidad = 0, valorVenta;
+        boolean confirmacionPago = false;
+        try{
+            if(local.getServicioImpresora().get(tipoServicio) instanceof Impresora){
+                System.out.print("Ingrese la cantidad de unidades vendidas: ");
+                int und = getData.nextInt();
+                getData.nextLine();
+                System.out.print("Valor pagado: ");
+                valorVenta = getData.nextDouble();
+                getData.nextLine();
+                confirmacionPago = local.registrarVentaServImpresion(tipoServicio, und, valorVenta);
+                cantidad = und;
+            }else if(local.getServicioImpresora().get(tipoServicio) instanceof Plotter){
+                System.out.print("Ingrese la cantidad de cm cuadrados vendidas (usar , para el decimal): ");
+                cantidad = getData.nextDouble();
+                System.out.print("Valor pagado: ");
+                valorVenta = getData.nextDouble();
+                confirmacionPago = local.registrarVentaServImpresion(tipoServicio, cantidad, valorVenta);
             }
-        } else if (tipoServicio.equals("laser")) {
-            if (local.registrarVentaLaser(tipoImpresion, cantidad, valorVenta)) {
-                System.out.println("\n**** Registro exitoso de impresion laser ****");
-                System.out.println(tipoServicio + " - " + tipoImpresion + " cantidad: " + cantidad);
-                System.out.println("Costos : " + local.getLaser().valorCostos() +
-                                " | Ganancia: " + local.getLaser().ganancia());
-            } else {
-                System.out.println("Error! Verifique el valor pagado.");
+
+           if (confirmacionPago) {
+               ServicioImpresora serv = local.getServicioImpresora().get(tipoServicio);
+               System.out.println("\n**** Registro exitoso de fotocopia ****");
+               System.out.println(serv.getTipo()
+                            + "\n cantidad: " + cantidad
+                            + "\n valor pagado: " + cantidad*serv.getValorParaVenta());
+
+           } else {
+                    System.out.println("Error! Verifique el valor pagado.");
+           }
+        }catch (IllegalArgumentException | NoSuchElementException | IllegalStateException e){
+            System.err.println("Se ha ingresado un valor incorrectamente, se cancela la operacióm " +
+                    "intente nuevamente");
+            if(getData.hasNext()){
+                getData.nextLine();
             }
         }
+
+
+
     }
 
-    public static void servicioVentaPlotter(Negocio local, Scanner getData, String tipoImpresion){
-        double ancho, alto, cantidad;
-        double valorVenta;
-        System.out.print("\nIngrese la cantidad: ");
-        cantidad = getData.nextDouble();
-        getData.nextLine();  //limpiar el salto de línea
-        System.out.print("Ingrese el ancho en cm: ");
-        ancho = getData.nextDouble();
-        getData.nextLine();
-        System.out.print("Ingrese el alto en cm: ");
-        alto = getData.nextDouble();
-        getData.nextLine();
-        System.out.print("Valor pagado: ");
-        valorVenta = getData.nextDouble();
-        getData.nextLine();
-        local.getPlotter().calcularArea(ancho, alto);
-        double area = local.getPlotter().getArea();
 
-        if (tipoImpresion == "plano" || tipoImpresion == "publicidad"){
-            if (local.registrarVentaPlano(cantidad, area, valorVenta)){
-                System.out.println("\n**** Registro exitoso de impresión " + tipoImpresion + " ****");
-                System.out.println("Area: " + local.getPlotter().getArea() + " cm²");
-                System.out.println("Costos: " + local.getPlotter().valorCostos() +
-                                " | Ganancia: " + local.getPlotter().ganancia());
-            } else {
-                System.out.println("Error! Verifique el valor pagado.");
-            }
-        }
-    }
 
     public static void cierreDia(){
 
@@ -124,26 +97,31 @@ public class Main {
 
     public static void subMenuImpresora(Negocio local, Scanner getData){
         String opcion;
+        int cantidadServimpresion = local.getServicioImpresora().size();
         do {
+            System.out.print("\nTipo de servicio:");
+            for (int i = 0; i < cantidadServimpresion; i++) {
+                System.out.printf("\n(%d) Registrar %s", 1+i, local.getServicioImpresora().get(i).getTipo());
+            }
             System.out.print("""
-            \nTipo de servicio:
-                (1) Registrar Fotocopia
-                (2) Registrar impresion Laser
-                (3) Registrar impresion Plano Arquitectónico
-                (4) Registrar impresion Afiche Publicitario
-                (5) Menú anterior
-            Ingrese una opcion: """);
+                \n(M) Menú anterior
+                Ingrese una opcion:\t""");
             opcion = getData.nextLine();
 
-            switch (opcion) {
-                case "1" -> servicioVentaImpresora(local, getData, "fotocopia");
-                case "2" -> servicioVentaImpresora(local, getData, "laser");
-                case "3" -> servicioVentaPlotter(local, getData, "plano");
-                case "4" -> servicioVentaPlotter(local, getData, "publicidad");
-                case "5" -> { }
-                default -> System.out.println("Opcion no valida");
+            if (opcion.equals("M")){break;}
+
+            try {
+                int valorOpcion = Integer.parseInt(opcion) - 1;
+                if(valorOpcion < cantidadServimpresion
+                        && valorOpcion >= 0){
+                    ventaServicioImpresora(local, getData, valorOpcion);
+                }else{
+                    throw new NumberFormatException();
+                }
+            }catch (NumberFormatException e){
+                System.err.println("\nError! la opción ingresada no es correcta\n");
             }
-        } while (!opcion.equals("5"));
+        } while (true);
     }
 
     public static void main(String[] args) throws Exception {
@@ -161,7 +139,7 @@ public class Main {
                 (3) Registrar servicio Impresora
                 (4) Cierre dia
                 (5) Salir
-            Ingrese una opcion: """);
+            Ingrese una opcion:\t""");
             opcion = getData.nextLine();
 
             switch (opcion) {

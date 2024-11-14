@@ -1,42 +1,53 @@
+
 public abstract class ServicioImpresora {
-    protected String tipoImpresion;
-    protected double cantidad;
-    protected double valorPagado;
+    protected double TotalIngresos;
+    protected String tipo;
+    protected double costo;
+    protected double valorParaVenta;
 
-    public ServicioImpresora(){
-        this.tipoImpresion = " ";
-        this.cantidad = 0;
-        this.valorPagado = 0;
-    }
-    
-    public String getTipoImpresion() {
-        return tipoImpresion;
+
+    public ServicioImpresora(String tipo, double costo, double valorParaVenta) {
+        this.tipo = tipo;
+        this.costo = costo;
+        this.valorParaVenta = valorParaVenta;
     }
 
-    public void setTipoImpresion(String tipoImpresion) {
-        this.tipoImpresion = tipoImpresion;
-    }
-    public double getCantidad() {
-        return cantidad;
+    public double getTotalIngresos() {
+        return TotalIngresos;
     }
 
-    public void setCantidad(double cantidad) {
-        this.cantidad += cantidad;
+    public void setTotalIngresos(double totalIngresos) {
+        this.TotalIngresos += totalIngresos;
     }
 
-    public double getValorPagado() {
-        return valorPagado;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setValorPagado(double valorPagado) {
-        this.valorPagado = valorPagado;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
-    public abstract double ganancia();
+    public double getCosto() {
+        return costo;
+    }
+
+    public void setCosto(double costo) {
+        this.costo = costo;
+    }
+
+    public double getValorParaVenta() {
+        return valorParaVenta;
+    }
+
+    public void setValorParaVenta(double valorParaVenta) {
+        this.valorParaVenta = valorParaVenta;
+    }
+
+    public double ganancia(){
+        return TotalIngresos - valorCostos();
+    };
 
     public abstract double valorCostos();
-
-    public abstract double valorVentas();
-
 
 }

@@ -1,55 +1,42 @@
 import java.util.ArrayList;
 
 public class Negocio {
-    private Impresora Fotocopia;
-    private Impresora Laser;
-    private Plotter Plotter;
-    private ArrayList<Operador> Operadores;
+    private ArrayList<ServicioImpresora> servicioImpresora;
+    private ArrayList<Operador> operadores;
     private double costoEnergiaDia;
     private double costoEmpleadoDia;
 
     public Negocio(double costoEnergia, double costoEmpleado){
-        Fotocopia = new Impresora( 50, 100, 100, 200);
-        Laser = new Impresora(150, 300, 300, 500);
-        Plotter = new Plotter(20, 40, 30, 60);
-        Operadores = new ArrayList<>();
-        Operadores.add(new Operador("UFF", 30, 100, 500, 1000));
-        Operadores.add(new Operador("Claro", 70, 200, 900, 2000));
-        Operadores.add(new Operador("Movistar", 50, 150, 700, 1500));
+        servicioImpresora = new ArrayList<>();
+        servicioImpresora.add(new Impresora("Fotocopia-BN", 50, 100));
+        servicioImpresora.add(new Impresora("Fotocopia-Color", 100, 200));
+        servicioImpresora.add(new Impresora("Laser-BN", 150, 300));
+        servicioImpresora.add(new Impresora("Laser-Color", 300, 500));
+        servicioImpresora.add(new Plotter("Plotter-Planos", 20, 30));
+        servicioImpresora.add(new Plotter("Plotter-Publicidad", 40, 60));
+
+        operadores = new ArrayList<>();
+        operadores.add(new Operador("UFF", 30, 100, 500, 1000));
+        operadores.add(new Operador("Claro", 70, 200, 900, 2000));
+        operadores.add(new Operador("Movistar", 50, 150, 700, 1500));
         this.costoEnergiaDia = costoEnergia;
         this.costoEmpleadoDia = costoEmpleado;
     }
 
-    public Plotter getPlotter() {
-        return Plotter;
+    public ArrayList<ServicioImpresora> getServicioImpresora() {
+        return servicioImpresora;
     }
 
-    public void setPlotter(Plotter plotter) {
-        Plotter = plotter;
-    }
-    
-    public Impresora getFotocopia() {
-        return Fotocopia;
+    public void setServicioImpresora(ArrayList<ServicioImpresora> servicioImpresora) {
+        this.servicioImpresora = servicioImpresora;
     }
 
-    public void setFotocopia(Impresora impresora) {
-        Fotocopia = impresora;
-    }
-
-    public Impresora getLaser() {
-        return Laser;
-    }
-
-    public void setLaser(Impresora laser) {
-        Laser = laser;
-    }
-    
     public ArrayList<Operador> getOperadores() {
-        return Operadores;
+        return operadores;
     }
 
     public void setOperadores(ArrayList<Operador> listaMinutos) {
-        this.Operadores = listaMinutos;
+        this.operadores = listaMinutos;
     }
 
     public double getCostoEnergiaDia() {
@@ -69,7 +56,7 @@ public class Negocio {
     }
 
     public boolean registrarVentaOperador(int indiceOperador, String tipoVentaOperador, double cantidad, double valorPagado){
-        Operador operador = this.Operadores.get(indiceOperador - 1); // operador especifico segun la posicion
+        Operador operador = this.operadores.get(indiceOperador - 1); // operador especifico segun la posicion
 
         if (tipoVentaOperador.equals("minuto")){
             double valorVentaMinuto = operador.getValorVentaMinuto(); // valor por minuto del operador especifico}
@@ -94,47 +81,25 @@ public class Negocio {
         }
     }
 
-    public boolean registrarVentaFotocopia(String tipoImpresion, double cantidad, double valorPagado){
-        if (tipoImpresion.equals("color")){
-            if (valorPagado == cantidad * Fotocopia.getValorVentaColor()){
-                Fotocopia.setCantidadColor(cantidad);
-                return true;
-            }
-        }else if (tipoImpresion.equals("BN")){
-            if (valorPagado == cantidad * Fotocopia.getValorVentaBN()){
-                Fotocopia.setCantidadBN(cantidad);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean registrarVentaLaser(String tipoImpresion, double cantidad, double valorPagado){
-        if (tipoImpresion.equals("color")){
-            if (valorPagado == cantidad * Laser.getValorVentaColor()){
-                Laser.setCantidadColor(cantidad);
-                return true;
-            }
-        }else if (tipoImpresion.equals("BN")){
-            if (valorPagado == cantidad * Laser.getValorVentaBN()){
-                Laser.setCantidadBN(cantidad);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean registrarVentaPlano(double cantidad, double area, double valorPagado){
-        if (valorPagado == cantidad * area * Plotter.getValorVentaPlano()) {
-            Plotter.setCantidad(cantidad);
+    public boolean registrarVentaServImpresion(int tipoImpresion, int cantidad, double valorPagado){
+        if(tipoImpresion >= 0
+                && tipoImpresion < this.servicioImpresora.size()
+                && this.servicioImpresora.get(tipoImpresion) instanceof Impresora
+                && cantidad > 0
+                && valorPagado == cantidad * this.servicioImpresora.get(tipoImpresion).getValorParaVenta()){
+            ((Impresora) this.servicioImpresora.get(tipoImpresion)).setCantidadUnidades(cantidad);
             return true;
         }
         return false;
     }
 
-    public boolean registrarVentaPublicidad(double cantidad, double area, double valorPagado) {
-        if (valorPagado == cantidad * area * Plotter.getValorVentaPublicidad()) {
-            Plotter.setCantidad(cantidad);
+    public boolean registrarVentaServImpresion(int tipoPlotter, double cantidad, double valorPagado){
+        if(tipoPlotter >= 0
+                && tipoPlotter < this.servicioImpresora.size()
+                && this.servicioImpresora.get(tipoPlotter) instanceof Plotter
+                && cantidad > 0.0
+                && valorPagado == cantidad * this.servicioImpresora.get(tipoPlotter).getValorParaVenta()){
+            ((Plotter) this.servicioImpresora.get(tipoPlotter)).setCmCuadradoFacturados(cantidad);
             return true;
         }
         return false;
