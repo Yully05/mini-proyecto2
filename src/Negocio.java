@@ -27,7 +27,7 @@ public class Negocio {
     }
 
     public ArrayList<ServicioImpresora> getServicioImpresora() {
-        return (ArrayList<ServicioImpresora>) servicioImpresora.clone();
+        return this.servicioImpresora;
     }
 
     public void setServicioImpresora(ArrayList<ServicioImpresora> servicioImpresora) {
@@ -35,7 +35,7 @@ public class Negocio {
     }
 
     public ArrayList<Operador> getOperadores() {
-        return (ArrayList<Operador>) operadores.clone();
+        return this.operadores;
     }
 
     public void setOperadores(ArrayList<Operador> listaMinutos) {
