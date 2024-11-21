@@ -9,7 +9,12 @@ public class Main {
         String opcion;
         double valorVenta;
         ArrayList<Operador> operadores = local.getOperadores();
-		while(true){
+
+        //Gracias al uso del enum insertado en Operador en este punto no hay necesidad de modificar o insertar código
+        //ya que gracias a los bucles se presentan las opciones contenidas en el arraylist<Operador> de Negocio y así
+        //mismo se maneja la transacción con el indice obtenido de la selección dada por el usuario
+
+        while(true){
             System.out.println("\nServicios operadores");
             for (int i = 0; i < operadores.size(); i++) {
                 System.out.println("    (" + (i + 1) + ") "
@@ -122,6 +127,10 @@ public class Main {
         double totalCostos = 0.0;
         double ganacias = 0.0;
 
+        //Utilizamos en este punto la clase Object para poder capturar el objeto que tenga mayor ganancia,
+        //esto gracias a que Object es la clase base para todas las clases que se crean en un proyecto, ya que
+        //está implicitamente heredada en cada una y por lo tanto, al referenciar la variable servicioConMayorGanacias
+        //con Object, se nos permite alojar la referencia a cualquier tipo de objeto ya que todas las clases derivan de esta.
         Object servicioConMayorGanacias = null;
         double ganaciaMax = 0.0;
 
@@ -155,6 +164,9 @@ public class Main {
                 + ((servicioConMayorGanacias == null) ? "-Ningun servicio ha sido facturado-" : servicioConMayorGanacias.toString())
                 + " con $"
                 + ganaciaMax);
+        //toString es uno de los métodos declarados en la clase Object, por ello cualquier objeto de cualquier clase tiene acceso
+        //a este, y gracias al polimorfismo en tiempo de ejecución, el resultado retornado será el declarado dentro de la clase
+        //a la cual pertenece el objeto del que se ha guardado la referencia en la variable servicioConMayorGanacias.
 
     }
 
