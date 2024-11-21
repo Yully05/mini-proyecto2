@@ -146,7 +146,7 @@ public class Main {
                 servicioConMayorGanacias = serOperador;
             }
         }
-
+        totalCostos += local.getCostoEmpleadoDia() + local.getCostoEnergiaDia();
 
         System.out.println("El Total del Dinero Recogido es: $" + totalIngresos);
         System.out.println("La Ganancia Obtenida es: $" + ganacias);
