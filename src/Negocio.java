@@ -63,6 +63,11 @@ public class Negocio {
                 && servOperadorSeleccionado >=0
                 && servOperadorSeleccionado < this.operadores.size()
                 && valorPagado == cantidad * this.operadores.get(servOperadorSeleccionado).getValorVentaUnidad()){
+
+            //Aqui se puede ver como el uso de enum en operador ha facilitado el registro de la venta, ya que
+            //solo con el indice de la lista se puede completar la transacción, evitando tener que recibir el tipo de
+            //servicio, e insertar condicionales para definir en qué campos se reflejaría la transacción.
+
             this.operadores.get(servOperadorSeleccionado).setCantidadesVendidas(cantidad);
             this.operadores.get(servOperadorSeleccionado).setTotalIngreso(valorPagado);
             return true;
